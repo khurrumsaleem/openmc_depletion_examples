@@ -30,10 +30,27 @@ bound_box = openmc.rectangular_prism(b, b, boundary_type="reflective")
 root_cell = openmc.Cell(fill=pin_univ, region=bound_box)
 geometry = openmc.Geometry([root_cell])
 
-# doing 2D so assign "volume"
+# simulation settings
+settings = openmc.Settings()
+settings.particles = 1000
+settings.inactive = 10
+settings.batches = 50
+
+# doing 2D so assign "volume", assumes z length of 1
 fuel.volume = math.pi * radii[0] ** 2
 
 # set up depletion
 chain = dpl.Chain.from_xml('casl_pwr_chain.xml')
+# print(chain.nuclide_dict) uncomment for dictionary of nulcides
+
+# set up model and transport coupled operator
+model = openmc.Model(geometry=geometry,settings=settings)
+operator = dpl.CoupledOperator(model,'casl_pwr_chain.xml')
+
+# determine power loading schedule and create integrator 
+power = 174
+time_steps = [30]*6 # 6 months
+integrator = dpl.PredictorIntegrator(operator,time_steps,power,timestep_units='d')
+integrator.integrate()
 
 # process results
