@@ -47,10 +47,8 @@ chain = dpl.Chain.from_xml('casl_pwr_chain.xml')
 model = openmc.Model(geometry=geometry,settings=settings)
 operator = dpl.CoupledOperator(model,'casl_pwr_chain.xml')
 
-# determine power loading schedule and create integrator 
+# determine power loading schedule, create integrator, and run simulation
 power = 174
 time_steps = [30]*6 # 6 months
 integrator = dpl.PredictorIntegrator(operator,time_steps,power,timestep_units='d')
 integrator.integrate()
-
-# process results
