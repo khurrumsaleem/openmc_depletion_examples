@@ -7,8 +7,8 @@ import numpy as np
 results = dpl.Results("depletion_results.h5")
 times,k = results.get_keff()
 times /= (24*60*60) # # convert back to days from seconds
-print("times:\n",times)
-print("eigenvalues:\n",k)
+# print("times:\n",times)
+# print("eigenvalues:\n",k)
 
 pyplot.errorbar(times, k[:, 0], yerr=k[:, 1],capsize=2)
 pyplot.title("$k_{eff}$ for each depletion stage")
@@ -18,3 +18,36 @@ pyplot.grid(visible=True,axis='y')
 pyplot.xlabel("Time [d]")
 pyplot.ylabel("$k_{eff}\pm \sigma_{k_{eff}}$")
 pyplot.savefig("k_vs_time.png")
+pyplot.clf()
+
+# examine atomic compositions and save plots
+_, u235 = results.get_atoms("1", "U235")
+_, xe135 = results.get_atoms("1", "Xe135")
+
+pyplot.plot(times, u235, label="U235")
+pyplot.xlabel("Time [d]")
+pyplot.ylabel("Number of atoms - U235")
+pyplot.title("U235 depletion")
+pyplot.savefig("U235_depl.png")
+pyplot.clf()
+
+pyplot.plot(times, xe135, label="Xe135")
+pyplot.xlabel("Time [d]")
+pyplot.ylabel("Number of atoms - Xe135")
+pyplot.title("Xe135 depletion")
+pyplot.savefig("Xe135_depl.png")
+pyplot.clf()
+
+_, u235_fission = results.get_reaction_rate("1", "U235", "fission")
+
+pyplot.plot(times, u235_fission)
+pyplot.xlabel("Time [d]")
+pyplot.ylabel("Fission reactions / s")
+pyplot.title("Fission Rate Over Time")
+pyplot.savefig("fission_rate_vs_time.png")
+pyplot.clf()
+
+# TODO LOOK INTO
+# div_surfs_1 = [openmc.ZCylinder(r=1)]
+# div_1 = openmc.model.pin(div_surfs_1, [fuel, water], subdivisions={0: 10})
+# div_1.plot(width=(2.0, 2.0))
