@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='utf-8'?>
+<cross_sections>
+  <depletion_chain path="casl_pwr_chain.xml" type="depletion_chain" />
+</cross_sections>

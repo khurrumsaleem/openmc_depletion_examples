@@ -29,6 +29,8 @@ b = 1.24 # dimension of bounding box
 bound_box = openmc.rectangular_prism(b, b, boundary_type="reflective")
 root_cell = openmc.Cell(fill=pin_univ, region=bound_box)
 geometry = openmc.Geometry([root_cell])
+axesim1 = geometry.root_universe.plot()
+axesim1.figure.savefig("geometry_slice.png")
 
 # simulation settings
 settings = openmc.Settings()
@@ -39,8 +41,12 @@ settings.batches = 50
 # doing 2D so assign "volume", assumes z length of 1
 fuel.volume = math.pi * radii[0] ** 2
 
-# set up depletion
+# set up and register depletion chain
 chain = dpl.Chain.from_xml('casl_pwr_chain.xml')
+# registration allows creatioin of an Operator without passing a chain file
+data_lib = openmc.data.DataLibrary()
+data_lib.register_file("casl_pwr_chain.xml")
+data_lib.export_to_xml()
 # print(chain.nuclide_dict) uncomment for dictionary of nulcides
 
 # set up model and transport coupled operator
@@ -52,3 +58,12 @@ power = 174
 time_steps = [30]*6 # 6 months
 integrator = dpl.PredictorIntegrator(operator,time_steps,power,timestep_units='d')
 integrator.integrate()
+
+## EXTRAS
+# In cases where burnable absorbers are present, pins experience strong flux
+# gradients near the interface with coolant and the pin should be subdivided
+# in order to allow for more accurate depletion within a pin itself
+div_surfs_1 = [openmc.ZCylinder(r=1)]
+div_1 = openmc.model.pin(div_surfs_1, [fuel, water], subdivisions={0: 10})
+axesim2 = div_1.plot(width=(2.0, 2.0))
+axesim2.figure.savefig("pin_division.png")

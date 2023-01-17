@@ -46,8 +46,3 @@ pyplot.ylabel("Fission reactions / s")
 pyplot.title("Fission Rate Over Time")
 pyplot.savefig("fission_rate_vs_time.png")
 pyplot.clf()
-
-# TODO LOOK INTO
-# div_surfs_1 = [openmc.ZCylinder(r=1)]
-# div_1 = openmc.model.pin(div_surfs_1, [fuel, water], subdivisions={0: 10})
-# div_1.plot(width=(2.0, 2.0))
